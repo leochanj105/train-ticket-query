@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -u
 
-> time_reserve
-> time_pay
-> time_cancel
+direc=$1
 
 restimes=1000
 paytimes=1000
@@ -16,7 +14,10 @@ token=${loginres[1]}
 ssh node5 'docker exec $(docker ps | grep order-mongo | awk '\''{print $1}'\'') mongodump -o snapshot1'
 ssh node4 'docker exec $(docker ps | grep inside-payment-mongo | awk '\''{print $1}'\'') mongodump -o snapshot1'
 python3 warmup.py ${aid} ${token}
-#ssh node5 'docker exec $(docker ps | grep order-mongo | awk '\''{print $1}'\'') mongorestore --drop snapshot1'
+
+> time_reserve
+> time_pay
+> time_cancel
 
 for i in $(seq 1 $restimes)
 do
@@ -42,6 +43,7 @@ ssh node4 'docker exec $(docker ps | grep inside-payment-mongo | awk '\''{print 
 python3 pay_once.py ${aid} ${token} ${orderId}
 done
 
+
 ssh node5 'docker exec $(docker ps | grep order-mongo | awk '\''{print $1}'\'') mongodump -o snapshot3'
 ssh node4 'docker exec $(docker ps | grep inside-payment-mongo | awk '\''{print $1}'\'') mongodump -o snapshot3'
 for i in $(seq 1 $canceltimes)
@@ -54,3 +56,5 @@ ssh node4 'docker exec $(docker ps | grep inside-payment-mongo | awk '\''{print 
 python3 cancel_once.py ${aid} ${token} ${orderId}
 done
 
+mkdir -p ../${direc}
+cp ./time* ../${direc}
