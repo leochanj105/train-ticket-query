@@ -6,6 +6,7 @@ import numpy as np
 from random import random
 from threading import Thread, Barrier
 import sys
+import os
 from common import *
 # num_threads = 2
 # num_reqs_per_thread = 1
@@ -126,6 +127,7 @@ def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
 if __name__ == '__main__':
     num_threads = int(sys.argv[1])
     nreqpt = int(sys.argv[2])
+    dirname = sys.argv[3]
     # keepoff = float(sys.argv[3])
 
     logininfo = {"email":"fdse_microservices@163.com", "password":"DefaultPassword", "verificationCode" :"abcd"}
@@ -159,22 +161,24 @@ if __name__ == '__main__':
     tcancels.append(tcancel)
 
     snt = str(num_threads)
-    with open("meanpres_"+str(num_threads), "w") as f:
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    with open(dirname+"/meanpres_"+str(num_threads), "w") as f:
         for data in meanpres:
             f.write(str(data)+"\n")
-    with open("meanpay_"+str(num_threads), "w") as f:
+    with open(dirname+"/meanpay_"+str(num_threads), "w") as f:
         for data in meanpays:
             f.write(str(data)+"\n")
-    with open("meancancel_"+str(num_threads), "w") as f:
+    with open(dirname+"/meancancel_"+str(num_threads), "w") as f:
         for data in meancancels:
             f.write(str(data)+"\n")
-    with open("tpres_"+str(num_threads), "w") as f:
+    with open(dirname+"/tpres_"+str(num_threads), "w") as f:
         for data in tpres:
             f.write(str(data)+"\n")
-    with open("tpays_"+str(num_threads), "w") as f:
+    with open(dirname+"/tpays_"+str(num_threads), "w") as f:
         for data in tpays:
             f.write(str(data)+"\n")
-    with open("tcancels_"+str(num_threads), "w") as f:
+    with open(dirname+"/tcancels_"+str(num_threads), "w") as f:
         for data in tcancels:
             f.write(str(data)+"\n")
 
