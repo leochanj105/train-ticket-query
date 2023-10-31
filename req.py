@@ -68,14 +68,14 @@ def runmt(num_threads, nreq, aid, token):
 
 
     meanpre = np.mean(allpretimes)
-    paypre = np.mean(allpaytimes)
-    cancelpre = np.mean(allcanceltimes)
+    meanpay = np.mean(allpaytimes)
+    meancancel = np.mean(allcanceltimes)
     # actualtime = reqtime - 2*keepoff
     tpre = np.size(allpretimes)/preduration
     tpay = np.size(allpaytimes)/payduration
     tcancel = np.size(allcanceltimes)/cancelduration
     # print(np.size(allpretimes))
-    return meanpre, paypre, cancelpre, tpre, tpay, tcancel
+    return meanpre, meanpay, meancancel, tpre, tpay, tcancel
 
 def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
     starts[idx] = time.time()
@@ -142,32 +142,31 @@ if __name__ == '__main__':
     print("warm finished")
 
     meanpres = []
-    paypres = []
-    cancelpres = []
+    meanpays = []
+    meancancels = []
     tpres = []
     tpays = []
     tcancels = []
     # nreqpt = 5
     
-    print(nt)
-    meanpre, paypre, cancelpre, tpre, tpay, tcancel = runmt(num_threads, nreqpt, aid, token)
+    #print(nt)
+    meanpre, meanpay, meancancel, tpre, tpay, tcancel = runmt(num_threads, nreqpt, aid, token)
     meanpres.append(meanpre)
-    paypres.append(paypre)
-    cancelpres.append(cancelpre)
+    meanpays.append(meanpay)
+    meancancels.append(meancancel)
     tpres.append(tpre)
     tpays.append(tpay)
     tcancels.append(tcancel)
-
 
     snt = str(num_threads)
     with open("meanpres_"+str(num_threads), "w") as f:
         for data in meanpres:
             f.write(str(data)+"\n")
     with open("meanpay_"+str(num_threads), "w") as f:
-        for data in paypres:
+        for data in meanpays:
             f.write(str(data)+"\n")
     with open("meancancel_"+str(num_threads), "w") as f:
-        for data in cancelpres:
+        for data in meancancels:
             f.write(str(data)+"\n")
     with open("tpres_"+str(num_threads), "w") as f:
         for data in tpres:
