@@ -67,7 +67,8 @@ def runmt(num_threads, nreq, aid, token):
         t.join()
     cancelduration = max(ends) - min(starts) 
 
-
+    #print(allpaytimes)
+    #print(allcanceltimes)
     meanpre = np.mean(allpretimes)
     meanpay = np.mean(allpaytimes)
     meancancel = np.mean(allcanceltimes)
@@ -98,6 +99,8 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
             pretime, preres = preserve(aid, token, tripId)
             if pretime is not None:
                 pretimes.append(pretime)
+            else:
+                print("reached after res...", pretime, preres)
             if preres is not None:
                 if 'order' in preres:
                   if preres['order'] is not None:
@@ -111,6 +114,8 @@ def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
         paytime, payres = pay(aid, token, orderids[i], tripids[i])
         if paytime is not None:
             paytimes.append(paytime)
+        else:
+            print("reached after pay...", paytime, payres)
     ends[idx] = time.time()
 
 def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
@@ -119,6 +124,8 @@ def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
         canceltime, cancelres = cancel(aid, token, orderids[i])
         if canceltime is not None:
             canceltimes.append(canceltime)
+        else:
+            print("reached after cancel...", canceltime, cancelres)
         # print(cancelres)
     ends[idx] = time.time()
     
@@ -128,20 +135,24 @@ if __name__ == '__main__':
     num_threads = int(sys.argv[1])
     nreqpt = int(sys.argv[2])
     dirname = sys.argv[3]
+    aid = sys.argv[4]
+    token = sys.argv[5]
     # keepoff = float(sys.argv[3])
 
-    logininfo = {"email":"fdse_microservices@163.com", "password":"DefaultPassword", "verificationCode" :"abcd"}
-    res = requests.post("http://"+  loginaddr +":12342/login", json = logininfo)
-    resobj = json.loads(res.text)
-    print(resobj)
-    aid = resobj['account']['id']
-    token = resobj['token']
+    #logininfo = {"email":"fdse_microservices@163.com", "password":"DefaultPassword", "verificationCode" :"abcd"}
+    #res = requests.post("http://"+  loginaddr +":12342/login", json = logininfo)
+    #resobj = json.loads(res.text)
+    #print(resobj)
+    #aid = resobj['account']['id']
+    #token = resobj['token']
     
-
-    #warmup
-    print("warmingup...")
-    runmt(20, 5, aid, token)
-    print("warm finished")
+    
+    if num_threads <= 0:
+        #warmup
+        print("warmingup...")
+        runmt(20, nreqpt, aid, token)
+        print("warm finished")
+        exit(0)
 
     meanpres = []
     meanpays = []
@@ -163,22 +174,22 @@ if __name__ == '__main__':
     snt = str(num_threads)
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    with open(dirname+"/meanpres_"+str(num_threads), "w") as f:
+    with open(dirname+"/meanpres_"+str(num_threads), "a") as f:
         for data in meanpres:
             f.write(str(data)+"\n")
-    with open(dirname+"/meanpay_"+str(num_threads), "w") as f:
+    with open(dirname+"/meanpay_"+str(num_threads), "a") as f:
         for data in meanpays:
             f.write(str(data)+"\n")
-    with open(dirname+"/meancancel_"+str(num_threads), "w") as f:
+    with open(dirname+"/meancancel_"+str(num_threads), "a") as f:
         for data in meancancels:
             f.write(str(data)+"\n")
-    with open(dirname+"/tpres_"+str(num_threads), "w") as f:
+    with open(dirname+"/tpres_"+str(num_threads), "a") as f:
         for data in tpres:
             f.write(str(data)+"\n")
-    with open(dirname+"/tpays_"+str(num_threads), "w") as f:
+    with open(dirname+"/tpays_"+str(num_threads), "a") as f:
         for data in tpays:
             f.write(str(data)+"\n")
-    with open(dirname+"/tcancels_"+str(num_threads), "w") as f:
+    with open(dirname+"/tcancels_"+str(num_threads), "a") as f:
         for data in tcancels:
             f.write(str(data)+"\n")
 

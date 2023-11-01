@@ -5,9 +5,16 @@ from common import *
 logininfo = {"email":"fdse_microservices@163.com", "password":"DefaultPassword", "verificationCode" :"abcd"}
 res = requests.post("http://"+  loginaddr +":12342/login", json = logininfo)
 resobj = json.loads(res.text)
+aid = None
+if 'account' in resobj:
+    aid = resobj['account']['id']
+    print(aid)
+else:
+    print(resobj)
+if 'token' in resobj:
+    token = resobj['token']
+    print(token)
+else:
+    print(resobj)
 
-aid = resobj['account']['id']
-token = resobj['token']
-
-print(aid)
-print(token)
+#print(token)

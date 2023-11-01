@@ -14,7 +14,7 @@ canceladdr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 payaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 presaddr = "node2.throughput.lumos-pg0.utah.cloudlab.us"
 presotheraddr = "node2.throughput.lumos-pg0.utah.cloudlab.us"
-loginaddr = "node4.throughput.lumos-pg0.utah.cloudlab.us"
+loginaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 
 
 
@@ -83,6 +83,9 @@ def preserve(aid, token, tripId):
         return elapsed, preservejson
     except requests.exceptions.Timeout as e:
         print(e)
+    except Exception as e2:
+        print(e2)
+        
     return None, None
 
 def pay(aid, token, orderId, tripId):
@@ -96,7 +99,10 @@ def pay(aid, token, orderId, tripId):
         return elapsed, json.loads(res.text) 
     except requests.exceptions.Timeout as e:
         print(e)
-        return None, None
+    except Exception as e2:
+        print(e2)
+    return None, None
+    
     
     
     
@@ -110,4 +116,6 @@ def cancel(aid, token, orderId):
         return elapsed, json.loads(res.text)
     except requests.exceptions.Timeout as e:
         print(e)
-        return None, None
+    except Exception as e2:
+        print(e2)
+    return None, None
