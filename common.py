@@ -84,6 +84,7 @@ def preserve(aid, token, tripId):
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
+        print("In reserve")
         print(e2)
         
     return None, None
@@ -100,6 +101,7 @@ def pay(aid, token, orderId, tripId):
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
+        print("In pay")
         print(e2)
     return None, None
     
@@ -117,5 +119,6 @@ def cancel(aid, token, orderId):
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
+        print("In cancel")
         print(e2)
     return None, None
