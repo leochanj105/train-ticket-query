@@ -45,6 +45,7 @@ def runmt(num_threads, nreq, aid, token):
     for i in range(num_threads):
         t = threads[i]
         t.join()
+
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
     endsexclude = endsexclude[endsexclude!=0]
@@ -71,6 +72,8 @@ def runmt(num_threads, nreq, aid, token):
     payduration = max(endsexclude) - min(startsexclude) 
     
     print("canceling")
+    starts = [0.0] * num_threads
+    ends = [0.0] * num_threads
     threads = []
     for i in range(num_threads):
         t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, allcanceltimes[i], allorderids[i], starts, ends, i))
@@ -80,8 +83,6 @@ def runmt(num_threads, nreq, aid, token):
         t = threads[i]
         t.join()
 
-    starts = [0.0] * num_threads
-    ends = [0.0] * num_threads
 
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
