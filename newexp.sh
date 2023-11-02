@@ -14,12 +14,14 @@ token=${loginres[1]}
 python3 req.py -1 5 xx $aid $token
 
 #echo "doing for #clients=1"
-#python3 req.py 1 $reqpt $direc $aid $token
+#dirname=c1r{$reqpt}
+#python3 req.py 1 $reqpt $dirname $aid $token
 
 for i in $(seq $mint $step $maxt)
 do	
-	echo "doing for #clients="$i
-	python3 req.py $i $reqpt $direc $aid $token
+	dirname="$direc/c${i}r${reqpt}"
+	echo "doing for #clients="$i, $dirname
+	python3 req.py $i $reqpt $dirname $aid $token
 done
 
 
