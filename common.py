@@ -46,7 +46,7 @@ def getother(aid, token, orderId):
     return elapsed, json.loads(res.text)
 
 
-def preserve_other(aid, token, orderId, tripId):
+def preserve_other(aid, token, orderId, tripId, session):
     orderTicketsInfoWithOrderId = {"contactsId":"aded7dc5-06a7-4503-8e21-b7cad7a1f386",
                                    "tripId":tripId,
                                    "seatType":2,
@@ -58,7 +58,7 @@ def preserve_other(aid, token, orderId, tripId):
     # print(orderTicketsInfoWithOrderId)
     start = time.time()
     try:
-        preserveres = requests.post("http://" + presotheraddr + ":14569/preserveOther", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
+        preserveres = session.post("http://" + presotheraddr + ":14569/preserveOther", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
         preservejson = json.loads(preserveres.text)
         return elapsed, preservejson
@@ -66,7 +66,7 @@ def preserve_other(aid, token, orderId, tripId):
         print(e)
     return None,None
 
-def preserve(aid, token, tripId):
+def preserve(aid, token, tripId, session):
     orderTicketsInfoWithOrderId = {"contactsId":"aded7dc5-06a7-4503-8e21-b7cad7a1f386",
                                    "tripId":tripId,
                                    "seatType":2,
@@ -77,7 +77,7 @@ def preserve(aid, token, tripId):
     # print(orderTicketsInfoWithOrderId)
     start = time.time()
     try:
-        preserveres = requests.post("http://" + presaddr + ":14568/preserve", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
+        preserveres = session.post("http://" + presaddr + ":14568/preserve", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
         preservejson = json.loads(preserveres.text)
         return elapsed, preservejson
@@ -89,13 +89,13 @@ def preserve(aid, token, tripId):
         
     return None, None
 
-def pay(aid, token, orderId, tripId):
+def pay(aid, token, orderId, tripId, session):
     paymentInfo = {"orderId": orderId,
                    "tripId": tripId}
     cookies = {'loginId': aid, 'loginToken':token}
     start = time.time()
     try:
-        res = requests.post("http://" + payaddr + ":18673/inside_payment/pay", json = paymentInfo, cookies=cookies, timeout=timeout)
+        res = session.post("http://" + payaddr + ":18673/inside_payment/pay", json = paymentInfo, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
         return elapsed, json.loads(res.text) 
     except requests.exceptions.Timeout as e:
@@ -108,12 +108,12 @@ def pay(aid, token, orderId, tripId):
     
     
     
-def cancel(aid, token, orderId):
+def cancel(aid, token, orderId, session):
     cancelInfo = {"orderId": orderId}
     cookies = {'loginId': aid, 'loginToken':token}
     start = time.time()
     try:
-        res = requests.post("http://" + canceladdr + ":18885/cancelOrder", json = cancelInfo, cookies=cookies, timeout=timeout)
+        res = session.post("http://" + canceladdr + ":18885/cancelOrder", json = cancelInfo, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
         return elapsed, json.loads(res.text)
     except requests.exceptions.Timeout as e:

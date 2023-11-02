@@ -87,54 +87,57 @@ def runmt(num_threads, nreq, aid, token):
     return meanpre, meanpay, meancancel, tpre, tpay, tcancel
 
 def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
-    starts[idx] = time.time()
-    for i in range(nreq):
-        isother = False
-        if isother:
-            orderId = str(uuid.uuid4())
-            tripId = "Z1234"
-            tripids.append(tripId)
-            pretime, preres = preserve_other(aid, token, orderId, tripId)
-            if pretime is not None:
-                pretimes.append(pretime)    
-            if preres is not None:
-                # orderId = preres['order']['id']
-                orderids.append(orderId)
-        else:
-            tripId = "G1234"
-            tripids.append(tripId)
-            pretime, preres = preserve(aid, token, tripId)
-            if pretime is not None:
-                pretimes.append(pretime)
-            else:
-                print("reached after res...", pretime, preres)
-            if preres is not None:
-                if 'order' in preres:
-                  if preres['order'] is not None:
-                    orderId = preres['order']['id']
+    with requests.Session() as session:
+        starts[idx] = time.time()
+        for i in range(nreq):
+            isother = False
+            if isother:
+                orderId = str(uuid.uuid4())
+                tripId = "Z1234"
+                tripids.append(tripId)
+                pretime, preres = preserve_other(aid, token, orderId, tripId, session)
+                if pretime is not None:
+                    pretimes.append(pretime)    
+                if preres is not None:
+                    # orderId = preres['order']['id']
                     orderids.append(orderId)
-    ends[idx] = time.time()
+            else:
+                tripId = "G1234"
+                tripids.append(tripId)
+                pretime, preres = preserve(aid, token, tripId, session)
+                if pretime is not None:
+                    pretimes.append(pretime)
+                else:
+                    print("reached after res...", pretime, preres)
+                if preres is not None:
+                    if 'order' in preres:
+                      if preres['order'] is not None:
+                        orderId = preres['order']['id']
+                        orderids.append(orderId)
+        ends[idx] = time.time()
     
 def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
-    starts[idx] = time.time()
-    for i in range(len(orderids)):
-        paytime, payres = pay(aid, token, orderids[i], tripids[i])
-        if paytime is not None:
-            paytimes.append(paytime)
-        else:
-            print("reached after pay...", paytime, payres)
-    ends[idx] = time.time()
+    with requests.Session() as session:
+        starts[idx] = time.time()
+        for i in range(len(orderids)):
+            paytime, payres = pay(aid, token, orderids[i], tripids[i], session)
+            if paytime is not None:
+                paytimes.append(paytime)
+            else:
+                print("reached after pay...", paytime, payres)
+        ends[idx] = time.time()
 
 def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
-    starts[idx] = time.time()
-    for i in range(len(orderids)):
-        canceltime, cancelres = cancel(aid, token, orderids[i])
-        if canceltime is not None:
-            canceltimes.append(canceltime)
-        else:
-            print("reached after cancel...", canceltime, cancelres)
-        # print(cancelres)
-    ends[idx] = time.time()
+    with requests.Session() as session:
+        starts[idx] = time.time()
+        for i in range(len(orderids)):
+            canceltime, cancelres = cancel(aid, token, orderids[i], session)
+            if canceltime is not None:
+                canceltimes.append(canceltime)
+            else:
+                print("reached after cancel...", canceltime, cancelres)
+            # print(cancelres)
+        ends[idx] = time.time()
     
 
 
