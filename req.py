@@ -52,6 +52,9 @@ def runmt(num_threads, nreq, aid, token):
     preduration = max(endsexclude) - min(startsexclude) 
     print("reserved: ", sum([len(l) for l in allorderids]))
 
+    starts = [0.0] * num_threads
+    ends = [0.0] * num_threads
+
     print("paying")
     threads = []
     for i in range(num_threads):
@@ -76,6 +79,9 @@ def runmt(num_threads, nreq, aid, token):
     for i in range(num_threads):
         t = threads[i]
         t.join()
+
+    starts = [0.0] * num_threads
+    ends = [0.0] * num_threads
 
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
@@ -122,7 +128,7 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripId = "Z1234"
                 tripids.append(tripId)
                 pretime, preres = preserve_other(aid, token, orderId, tripId, session)
-                if pretime is not None and preres is not None and 'order' in preres and preres['order'] is not None:
+                if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
                         pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
@@ -135,7 +141,7 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripId = "G1234"
                 tripids.append(tripId)
                 pretime, preres = preserve(aid, token, tripId, session)
-                if pretime is not None and preres is not None and 'order' in preres and preres['order'] is not None:
+                if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
                         pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
