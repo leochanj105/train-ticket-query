@@ -127,4 +127,4 @@ def cancel(aid, token, orderId, session):
         print("In cancel")
         print(e2)
         print(res)
-    return elapsed, json.loads(res.text)
+    return elapsed, response

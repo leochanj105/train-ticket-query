@@ -34,8 +34,8 @@ def runmt(num_threads, nreq, aid, token):
         allorderids.append(orderids)
         alltripids.append(tripids)
 
-    starts = [0] * num_threads
-    ends = [0] * num_threads
+    starts = [0.0] * num_threads
+    ends = [0.0] * num_threads
     print("reserving")
     threads = []
     for i in range(num_threads):
