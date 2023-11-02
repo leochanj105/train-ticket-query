@@ -83,13 +83,15 @@ def runmt(num_threads, nreq, aid, token):
         t = threads[i]
         t.join()
 
-
+    #print(ends)
+    #print(starts)
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
+    #print("here!!")
     endsexclude = endsexclude[endsexclude!=0]
     startsexclude = startsexclude[startsexclude!=0]
     cancelduration = max(endsexclude) - min(startsexclude) 
-
+    #print("here2!!")
     #print(allpaytimes)
     #print(allcanceltimes)
     meanpre = 0
@@ -112,10 +114,16 @@ def runmt(num_threads, nreq, aid, token):
         print("meancancel exception")
         print(e)
     
+    goodpre = sum([len(l) for l in allpretimes])
+    goodpay = sum([len(l) for l in allpaytimes])
+    goodcancel = sum([len(l) for l in allcanceltimes])
+    print(goodpre, preduration)
+    print(goodpay, payduration)
+    print(goodcancel, cancelduration)
     # actualtime = reqtime - 2*keepoff
-    tpre = np.size(allpretimes)/preduration
-    tpay = np.size(allpaytimes)/payduration
-    tcancel = np.size(allcanceltimes)/cancelduration
+    tpre = goodpre/preduration
+    tpay = goodpay/payduration
+    tcancel = goodcancel/cancelduration
     # print(np.size(allpretimes))
     return meanpre, meanpay, meancancel, tpre, tpay, tcancel
 
