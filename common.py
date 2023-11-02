@@ -86,6 +86,7 @@ def preserve(aid, token, tripId, session):
     except Exception as e2:
         print("In reserve")
         print(e2)
+        print(preserveres)
         
     return None, None
 
@@ -103,6 +104,7 @@ def pay(aid, token, orderId, tripId, session):
     except Exception as e2:
         print("In pay")
         print(e2)
+        print(res)
     return None, None
     
     
@@ -121,4 +123,5 @@ def cancel(aid, token, orderId, session):
     except Exception as e2:
         print("In cancel")
         print(e2)
+        print(res)
     return None, None
