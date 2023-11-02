@@ -45,7 +45,11 @@ def runmt(num_threads, nreq, aid, token):
     for i in range(num_threads):
         t = threads[i]
         t.join()
-    preduration = max(ends) - min(starts) 
+    endsexclude = np.array(ends)
+    startsexclude = np.array(starts)
+    endsexclude = endsexclude[endsexclude!=0]
+    startsexclude = startsexclude[startsexclude!=0]
+    preduration = max(endsexclude) - min(startsexclude) 
     print("reserved: ", sum([len(l) for l in allorderids]))
 
     print("paying")
@@ -57,7 +61,11 @@ def runmt(num_threads, nreq, aid, token):
     for i in range(num_threads):
         t = threads[i]
         t.join()
-    payduration = max(ends) - min(starts) 
+    endsexclude = np.array(ends)
+    startsexclude = np.array(starts)
+    endsexclude = endsexclude[endsexclude!=0]
+    startsexclude = startsexclude[startsexclude!=0]
+    payduration = max(endsexclude) - min(startsexclude) 
     
     print("canceling")
     threads = []
@@ -68,7 +76,12 @@ def runmt(num_threads, nreq, aid, token):
     for i in range(num_threads):
         t = threads[i]
         t.join()
-    cancelduration = max(ends) - min(starts) 
+
+    endsexclude = np.array(ends)
+    startsexclude = np.array(starts)
+    endsexclude = endsexclude[endsexclude!=0]
+    startsexclude = startsexclude[startsexclude!=0]
+    cancelduration = max(endsexclude) - min(startsexclude) 
 
     #print(allpaytimes)
     #print(allcanceltimes)
@@ -76,23 +89,20 @@ def runmt(num_threads, nreq, aid, token):
     meanpay = 0
     meancancel = 0
     try:
-        meanpre = np.mean(allpretimes)
+        meanpre = np.mean(sum(allpretimes, []))
     except Exception as e:
         print("meanpre exception")
-        print(allpretimes)
         print(e)
     try:
-        meanpay = np.mean(allpaytimes)
+        meanpay = np.mean(sum(allpaytimes, []))
     except Exception as e:
         print("meanpay exception")
-        print(allpaytimes)
         print(e)
     
     try:
-        meancancel = np.mean(allcanceltimes)
+        meancancel = np.mean(sum(allcanceltimes, []))
     except Exception as e:
         print("meancancel exception")
-        print(allcanceltimes)
         print(e)
     
     # actualtime = reqtime - 2*keepoff
