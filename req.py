@@ -46,6 +46,8 @@ def runmt(num_threads, nreq, aid, token):
         t = threads[i]
         t.join()
     preduration = max(ends) - min(starts) 
+    print("reserved: ", sum([len(l) for l in allorderids]))
+
     print("paying")
     threads = []
     for i in range(num_threads):
