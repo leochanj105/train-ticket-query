@@ -77,17 +77,20 @@ def runmt(num_threads, nreq, aid, token):
         meanpre = np.mean(allpretimes)
     except Exception as e:
         print("meanpre exception")
+        print(allpretimes)
         print(e)
     try:
         meanpay = np.mean(allpaytimes)
     except Exception as e:
         print("meanpay exception")
+        print(allpaytimes)
         print(e)
     
     try:
         meancancel = np.mean(allcanceltimes)
     except Exception as e:
         print("meancancel exception")
+        print(allcanceltimes)
         print(e)
     
     # actualtime = reqtime - 2*keepoff
