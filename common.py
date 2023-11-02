@@ -75,37 +75,38 @@ def preserve(aid, token, tripId, session):
                                    "to":"Shang Hai"}
     cookies = {'loginId': aid, 'loginToken':token}
     # print(orderTicketsInfoWithOrderId)
+    elapsed = None
+    response = None
     start = time.time()
     try:
         preserveres = session.post("http://" + presaddr + ":14568/preserve", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
-        preservejson = json.loads(preserveres.text)
-        return elapsed, preservejson
+        response = json.loads(preserveres.text)
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
         print("In reserve")
         print(e2)
         print(preserveres)
-        
-    return None, None
-
+    return elapsed, preservejson
 def pay(aid, token, orderId, tripId, session):
     paymentInfo = {"orderId": orderId,
                    "tripId": tripId}
     cookies = {'loginId': aid, 'loginToken':token}
+    elapsed = None
+    response = None
     start = time.time()
     try:
         res = session.post("http://" + payaddr + ":18673/inside_payment/pay", json = paymentInfo, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
-        return elapsed, json.loads(res.text) 
+        response = json.loads(res.text) 
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
         print("In pay")
         print(e2)
         print(res)
-    return None, None
+    return elapsed, response
     
     
     
@@ -113,15 +114,17 @@ def pay(aid, token, orderId, tripId, session):
 def cancel(aid, token, orderId, session):
     cancelInfo = {"orderId": orderId}
     cookies = {'loginId': aid, 'loginToken':token}
+    elapsed = None
+    response = None
     start = time.time()
     try:
         res = session.post("http://" + canceladdr + ":18885/cancelOrder", json = cancelInfo, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
-        return elapsed, json.loads(res.text)
+        response = json.loads(res.text)
     except requests.exceptions.Timeout as e:
         print(e)
     except Exception as e2:
         print("In cancel")
         print(e2)
         print(res)
-    return None, None
+    return elapsed, json.loads(res.text)
