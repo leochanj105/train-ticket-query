@@ -74,11 +74,21 @@ def runmt(num_threads, nreq, aid, token):
     meancancel = 0
     try:
         meanpre = np.mean(allpretimes)
+    except Exception as e:
+        print("meanpre exception")
+        print(e)
+    try:
         meanpay = np.mean(allpaytimes)
+    except Exception as e:
+        print("meanpay exception")
+        print(e)
+    
+    try:
         meancancel = np.mean(allcanceltimes)
     except Exception as e:
-        print("mean exception")
+        print("meancancel exception")
         print(e)
+    
     # actualtime = reqtime - 2*keepoff
     tpre = np.size(allpretimes)/preduration
     tpay = np.size(allpaytimes)/payduration
@@ -105,15 +115,12 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripId = "G1234"
                 tripids.append(tripId)
                 pretime, preres = preserve(aid, token, tripId, session)
-                if pretime is not None:
-                    pretimes.append(pretime)
-                else:
-                    print("reached after res...", pretime, preres)
-                if preres is not None:
-                    if 'order' in preres:
-                      if preres['order'] is not None:
+                if pretime is not None and preres is not None and 'order' in preres and preres['order'] is not None:
+                        pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
+                else:
+                    print("reached after res...", pretime, preres)
         ends[idx] = time.time()
     
 def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
