@@ -13,7 +13,7 @@ from common import *
 # reqtime = 5
 
 
-
+alwaysPrint=True
 
 def runmt(num_threads, nreq, aid, token):
     allpretimes = []
@@ -122,11 +122,15 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripId = "Z1234"
                 tripids.append(tripId)
                 pretime, preres = preserve_other(aid, token, orderId, tripId, session)
-                if pretime is not None:
-                    pretimes.append(pretime)    
-                if preres is not None:
-                    # orderId = preres['order']['id']
-                    orderids.append(orderId)
+                if pretime is not None and preres is not None and 'order' in preres and preres['order'] is not None:
+                        pretimes.append(pretime)
+                        orderId = preres['order']['id']
+                        orderids.append(orderId)
+                        if alwaysPrint:
+                            print(preres)
+                else:
+                    print("reached after res...", pretime, preres)
+
             else:
                 tripId = "G1234"
                 tripids.append(tripId)
@@ -135,6 +139,8 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                         pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
+                        if alwaysPrint:
+                            print(preres)
                 else:
                     print("reached after res...", pretime, preres)
         ends[idx] = time.time()
@@ -146,6 +152,8 @@ def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
             paytime, payres = pay(aid, token, orderids[i], tripids[i], session)
             if paytime is not None:
                 paytimes.append(paytime)
+                if alwaysPrint:
+                    print(payres)
             else:
                 print("reached after pay...", paytime, payres)
         ends[idx] = time.time()
@@ -157,6 +165,8 @@ def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
             canceltime, cancelres = cancel(aid, token, orderids[i], session)
             if canceltime is not None:
                 canceltimes.append(canceltime)
+                if alwaysPrint:
+                    print(cancelres)
             else:
                 print("reached after cancel...", canceltime, cancelres)
             # print(cancelres)
