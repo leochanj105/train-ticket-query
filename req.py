@@ -13,7 +13,7 @@ from common import *
 # reqtime = 5
 
 
-alwaysPrint=True
+alwaysPrint=False
 
 def runmt(num_threads, nreq, aid, token):
     allpretimes = []
@@ -150,7 +150,7 @@ def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
         starts[idx] = time.time()
         for i in range(len(orderids)):
             paytime, payres = pay(aid, token, orderids[i], tripids[i], session)
-            if paytime is not None:
+            if paytime is not None and payres == True:
                 paytimes.append(paytime)
                 if alwaysPrint:
                     print(payres)
@@ -163,7 +163,7 @@ def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
         starts[idx] = time.time()
         for i in range(len(orderids)):
             canceltime, cancelres = cancel(aid, token, orderids[i], session)
-            if canceltime is not None:
+            if canceltime is not None and cancelres is not None and cancelres['status'] == True:
                 canceltimes.append(canceltime)
                 if alwaysPrint:
                     print(cancelres)
