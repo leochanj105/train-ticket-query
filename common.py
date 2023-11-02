@@ -88,7 +88,7 @@ def preserve(aid, token, tripId, session):
         print("In reserve")
         print(e2)
         print(preserveres)
-    return elapsed, preservejson
+    return elapsed, response
 def pay(aid, token, orderId, tripId, session):
     paymentInfo = {"orderId": orderId,
                    "tripId": tripId}
