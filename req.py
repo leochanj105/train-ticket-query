@@ -69,9 +69,16 @@ def runmt(num_threads, nreq, aid, token):
 
     #print(allpaytimes)
     #print(allcanceltimes)
-    meanpre = np.mean(allpretimes)
-    meanpay = np.mean(allpaytimes)
-    meancancel = np.mean(allcanceltimes)
+    meanpre = 0
+    meanpay = 0
+    meancancel = 0
+    try:
+        meanpre = np.mean(allpretimes)
+        meanpay = np.mean(allpaytimes)
+        meancancel = np.mean(allcanceltimes)
+    except Exception as e:
+        print("mean exception")
+        print(e)
     # actualtime = reqtime - 2*keepoff
     tpre = np.size(allpretimes)/preduration
     tpay = np.size(allpaytimes)/payduration
