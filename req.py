@@ -36,7 +36,7 @@ def runmt(num_threads, nreq, aid, token):
 
     starts = [0] * num_threads
     ends = [0] * num_threads
-
+    print("reserving")
     threads = []
     for i in range(num_threads):
         t = Thread(name = "thread_" + str(i), target=runpres, args = (aid, token, nreq, allpretimes[i], allorderids[i], alltripids[i], starts, ends, i))
@@ -46,7 +46,7 @@ def runmt(num_threads, nreq, aid, token):
         t = threads[i]
         t.join()
     preduration = max(ends) - min(starts) 
-
+    print("paying")
     threads = []
     for i in range(num_threads):
         t = Thread(name = "thread_" + str(i), target=runpay, args = (aid, token, allpaytimes[i], allorderids[i], alltripids[i], starts, ends, i))
@@ -56,7 +56,8 @@ def runmt(num_threads, nreq, aid, token):
         t = threads[i]
         t.join()
     payduration = max(ends) - min(starts) 
-
+    
+    print("canceling")
     threads = []
     for i in range(num_threads):
         t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, allcanceltimes[i], allorderids[i], starts, ends, i))
