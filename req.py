@@ -14,89 +14,99 @@ from common import *
 
 
 alwaysPrint=False
+warmthds = 10
+warmreqs = 50
 
-def runmt(num_threads, nreq, aid, token):
-    allpretimes = []
-    allpaytimes = []
-    allcanceltimes = []
-    allorderids = []
-    alltripids = []
-
-    for i in range(num_threads):
-        pretimes = []
-        paytimes = []
-        canceltimes = []
-        orderids = []
-        tripids = []
-        allpretimes.append(pretimes)
-        allpaytimes.append(paytimes)
-        allcanceltimes.append(canceltimes)
-        allorderids.append(orderids)
-        alltripids.append(tripids)
-
-    starts = [0.0] * num_threads
-    ends = [0.0] * num_threads
-    print("reserving")
+def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
+    if trecs == None:
+        trecs = [[] for i in range(nthds)]
+    starts = [0.0] * nthds
+    ends = [0.0] * nthds
     threads = []
-    for i in range(num_threads):
-        t = Thread(name = "thread_" + str(i), target=runpres, args = (aid, token, nreq, allpretimes[i], allorderids[i], alltripids[i], starts, ends, i))
+    for i in range(nthds):
+        t = Thread(name = "thread_" + str(i), target=runpres, args = (aid, token, nreqs,trecs[i] ,orderids[i], tripids[i], starts, ends, i))
         threads.append(t)
         t.start()
-    for i in range(num_threads):
+    for i in range(nthds):
         t = threads[i]
         t.join()
+    return starts, ends
+def runmtpay(nthds, aid, token, trecs, orderids, tripids):
+    if trecs == None:
+        trecs = [[] for i in range(nthds)]
+    starts = [0.0] * nthds
+    ends = [0.0] * nthds
+    threads = []
+    for i in range(nthds):
+        t = Thread(name = "thread_" + str(i), target=runpay, args = (aid, token, trecs[i], orderids[i], tripids[i], starts, ends, i))
+        threads.append(t)
+        t.start()
+    for i in range(nthds):
+        t = threads[i]
+        t.join()
+    return starts, ends
 
+def runmtcancel(nthds, aid, token, trecs, orderids):
+    if trecs == None:
+        trecs = [[] for i in range(nthds)]
+    starts = [0.0] * nthds
+    ends = [0.0] * nthds
+    threads = []
+    for i in range(nthds):
+        t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, trecs[i], orderids[i], starts, ends, i))
+        threads.append(t)
+        t.start()
+    for i in range(nthds):
+        t = threads[i]
+        t.join()
+    return starts, ends
+
+
+def calcDuration(starts, ends):
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
     endsexclude = endsexclude[endsexclude!=0]
     startsexclude = startsexclude[startsexclude!=0]
-    preduration = max(endsexclude) - min(startsexclude) 
+    return max(endsexclude) - min(startsexclude) 
+ 
+def runmt(num_threads, nreq, aid, token):
+    allpretimes = [[] for i in range(num_threads)]
+    allpaytimes = [[] for i in range(num_threads)]
+    allcanceltimes = [[] for i in range(num_threads)]
+    allorderids = [[] for i in range(num_threads)]
+    warmuporderids = [[] for i in range(warmthds)]
+    alltripids = [[] for i in range(num_threads)]
+    warmuptripids = [[] for i in range(warmthds)]
+    print("warming up reserve..")
+    runmtres(warmthds, aid, token, warmreqs, None, warmuporderids, warmuptripids)
+    print("warming up reserve finished..")
+
+    print("reserving")
+    starts, ends = runmtres(num_threads, aid, token, nreq, allpretimes, allorderids, alltripids)
+    preduration = calcDuration(starts, ends)
     print("reserved: ", sum([len(l) for l in allorderids]))
 
-    starts = [0.0] * num_threads
-    ends = [0.0] * num_threads
+
+    print("warming up pay..")
+    runmtpay(warmthds, aid, token, None, warmuporderids, warmuptripids)
+    print("warming up pay finished..")
 
     print("paying")
-    threads = []
-    for i in range(num_threads):
-        t = Thread(name = "thread_" + str(i), target=runpay, args = (aid, token, allpaytimes[i], allorderids[i], alltripids[i], starts, ends, i))
-        threads.append(t)
-        t.start()
-    for i in range(num_threads):
-        t = threads[i]
-        t.join()
-    endsexclude = np.array(ends)
-    startsexclude = np.array(starts)
-    endsexclude = endsexclude[endsexclude!=0]
-    startsexclude = startsexclude[startsexclude!=0]
-    payduration = max(endsexclude) - min(startsexclude) 
+    starts, ends = runmtpay(num_threads, aid, token, allpaytimes, allorderids, alltripids)
+    payduration = calcDuration(starts, ends) 
     
-    print("canceling")
-    starts = [0.0] * num_threads
-    ends = [0.0] * num_threads
-    threads = []
-    for i in range(num_threads):
-        t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, allcanceltimes[i], allorderids[i], starts, ends, i))
-        threads.append(t)
-        t.start()
-    for i in range(num_threads):
-        t = threads[i]
-        t.join()
+    print("warming up cancel..")
+    runmtcancel(warmthds, aid, token, None, warmuporderids)
+    print("warming up cancel finished..")
 
-    #print(ends)
-    #print(starts)
-    endsexclude = np.array(ends)
-    startsexclude = np.array(starts)
-    #print("here!!")
-    endsexclude = endsexclude[endsexclude!=0]
-    startsexclude = startsexclude[startsexclude!=0]
-    cancelduration = max(endsexclude) - min(startsexclude) 
-    #print("here2!!")
-    #print(allpaytimes)
-    #print(allcanceltimes)
+    print("canceling")
+    starts, ends = runmtcancel(num_threads, aid, token, allcanceltimes, allorderids)
+    cancelduration = calcDuration(starts, ends)
+
     meanpre = 0
     meanpay = 0
     meancancel = 0
+
     try:
         meanpre = np.mean(sum(allpretimes, []))
     except Exception as e:
@@ -205,12 +215,12 @@ if __name__ == '__main__':
     #token = resobj['token']
     
     
-    if num_threads <= 0:
-        #warmup
-        print("warmingup...")
-        runmt(20, nreqpt, aid, token)
-        print("warm finished")
-        exit(0)
+    #if num_threads <= 0:
+    #    #warmup
+    #    print("warmingup...")
+    #    runmt(20, nreqpt, aid, token)
+    #    print("warm finished")
+    #    exit(0)
 
     meanpres = []
     meanpays = []
