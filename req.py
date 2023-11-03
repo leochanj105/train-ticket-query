@@ -15,7 +15,7 @@ from common import *
 
 alwaysPrint=False
 warmthds = 10
-warmreqs = 50
+warmreqs = 100
 
 def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
     if trecs == None:
