@@ -11,7 +11,7 @@ loginres=($(python3 login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 
-#python3 req.py -1 5 xx $aid $token
+python3 req.py -1 20 xx $aid $token
 
 #echo "doing for #clients=1"
 #dirname="$direc/c1r${reqpt}"

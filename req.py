@@ -14,9 +14,9 @@ from common import *
 
 
 alwaysPrint=False
-warmthds = 10
-warmreqs = 50
-
+warmthds = 20
+warmreqs = 100
+cutoff = 50
 def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
     if trecs == None:
         trecs = [[] for i in range(nthds)]
@@ -69,40 +69,42 @@ def calcDuration(starts, ends):
     startsexclude = startsexclude[startsexclude!=0]
     return max(endsexclude) - min(startsexclude) 
  
-def runmt(num_threads, nreq, aid, token):
+def runmt(num_threads, nreq, aid, token, isWarmup=False):
     allpretimes = [[] for i in range(num_threads)]
     allpaytimes = [[] for i in range(num_threads)]
     allcanceltimes = [[] for i in range(num_threads)]
     allorderids = [[] for i in range(num_threads)]
-    warmuporderids = [[] for i in range(warmthds)]
+    #warmuporderids = [[] for i in range(warmthds)]
     alltripids = [[] for i in range(num_threads)]
-    warmuptripids = [[] for i in range(warmthds)]
-    print("warming up reserve..")
-    runmtres(warmthds, aid, token, warmreqs, None, warmuporderids, warmuptripids)
-    print("warming up reserve finished..")
+    #warmuptripids = [[] for i in range(warmthds)]
+    #print("warming up reserve..")
+    #runmtres(warmthds, aid, token, warmreqs, None, warmuporderids, warmuptripids)
+    #print("warming up reserve finished..")
 
     print("reserving")
     starts, ends = runmtres(num_threads, aid, token, nreq, allpretimes, allorderids, alltripids)
     preduration = calcDuration(starts, ends)
     print("reserved: ", sum([len(l) for l in allorderids]))
+    time.sleep(5)
 
-
-    print("warming up pay..")
-    runmtpay(warmthds, aid, token, None, warmuporderids, warmuptripids)
-    print("warming up pay finished..")
+    #print("warming up pay..")
+    #runmtpay(warmthds, aid, token, None, warmuporderids, warmuptripids)
+    #print("warming up pay finished..")
 
     print("paying")
     starts, ends = runmtpay(num_threads, aid, token, allpaytimes, allorderids, alltripids)
     payduration = calcDuration(starts, ends) 
     
-    print("warming up cancel..")
-    runmtcancel(warmthds, aid, token, None, warmuporderids)
-    print("warming up cancel finished..")
+    time.sleep(5)
+    #print("warming up cancel..")
+    #runmtcancel(warmthds, aid, token, None, warmuporderids)
+    #print("warming up cancel finished..")
 
     print("canceling")
     starts, ends = runmtcancel(num_threads, aid, token, allcanceltimes, allorderids)
     cancelduration = calcDuration(starts, ends)
-
+    if isWarmup:
+        return None, None, None, None, None, None
     meanpre = 0
     meanpay = 0
     meancancel = 0
@@ -139,8 +141,9 @@ def runmt(num_threads, nreq, aid, token):
 
 def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
     with requests.Session() as session:
-        starts[idx] = time.time()
         for i in range(nreq):
+            if i == cutoff:
+                starts[idx] = time.time()
             isother = False
             if isother:
                 orderId = str(uuid.uuid4())
@@ -148,7 +151,8 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripids.append(tripId)
                 pretime, preres = preserve_other(aid, token, orderId, tripId, session)
                 if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
-                        pretimes.append(pretime)
+                        if i >= cutoff and i <= nreq-cutoff:
+                            pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
                         if alwaysPrint:
@@ -161,41 +165,51 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripids.append(tripId)
                 pretime, preres = preserve(aid, token, tripId, session)
                 if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
-                        pretimes.append(pretime)
+                        if i >= cutoff and i <= nreq-cutoff:
+                            pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
                         if alwaysPrint:
                             print(preres)
                 else:
                     print("reached after res...", pretime, preres)
-        ends[idx] = time.time()
+            if i == (nreq - cutoff):
+                ends[idx] = time.time()
     
 def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
     with requests.Session() as session:
-        starts[idx] = time.time()
-        for i in range(len(orderids)):
+        nreq = len(orderids)
+        for i in range(nreq):
+            if i == cutoff:
+                starts[idx] = time.time()
             paytime, payres = pay(aid, token, orderids[i], tripids[i], session)
             if paytime is not None and payres == True:
-                paytimes.append(paytime)
+                if i >= cutoff and i <= nreq-cutoff:
+                    paytimes.append(paytime)
                 if alwaysPrint:
                     print(payres)
             else:
                 print("reached after pay...", paytime, payres)
-        ends[idx] = time.time()
+            if i == (nreq - cutoff):
+                ends[idx] = time.time()
 
 def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
     with requests.Session() as session:
-        starts[idx] = time.time()
-        for i in range(len(orderids)):
+        nreq = len(orderids)
+        for i in range(nreq):
+            if i == cutoff:
+                starts[idx] = time.time()
             canceltime, cancelres = cancel(aid, token, orderids[i], session)
-            if canceltime is not None and cancelres is not None and cancelres['status'] == True:
-                canceltimes.append(canceltime)
+            if canceltime is not None and cancelres is not None and cancelres['status'] == True:    
+                if i >= cutoff and i <= nreq-cutoff:
+                    canceltimes.append(canceltime)
                 if alwaysPrint:
                     print(cancelres)
             else:
                 print("reached after cancel...", canceltime, cancelres)
+            if i == (nreq - cutoff):
+                ends[idx] = time.time()
             # print(cancelres)
-        ends[idx] = time.time()
     
 
 
@@ -206,7 +220,7 @@ if __name__ == '__main__':
     aid = sys.argv[4]
     token = sys.argv[5]
     # keepoff = float(sys.argv[3])
-
+    
     #logininfo = {"email":"fdse_microservices@163.com", "password":"DefaultPassword", "verificationCode" :"abcd"}
     #res = requests.post("http://"+  loginaddr +":12342/login", json = logininfo)
     #resobj = json.loads(res.text)
@@ -215,12 +229,12 @@ if __name__ == '__main__':
     #token = resobj['token']
     
     
-    #if num_threads <= 0:
-    #    #warmup
-    #    print("warmingup...")
-    #    runmt(20, nreqpt, aid, token)
-    #    print("warm finished")
-    #    exit(0)
+    if num_threads <= 0:
+        #warmup
+        print("warmingup...")
+        runmt(warmthds, warmreqs, aid, token, isWarmup=True)
+        print("warm finished")
+        exit(0)
 
     meanpres = []
     meanpays = []
