@@ -16,7 +16,7 @@ from common import *
 alwaysPrint=False
 warmthds = 20
 warmreqs = 100
-cutoff = 50
+cutoff = 100
 def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
     if trecs == None:
         trecs = [[] for i in range(nthds)]
@@ -65,8 +65,11 @@ def runmtcancel(nthds, aid, token, trecs, orderids):
 def calcDuration(starts, ends):
     endsexclude = np.array(ends)
     startsexclude = np.array(starts)
+    
     endsexclude = endsexclude[endsexclude!=0]
     startsexclude = startsexclude[startsexclude!=0]
+    if endsexclude.shape[0] == 0 or startsexclude.shape[0] == 0:
+        return 0
     return max(endsexclude) - min(startsexclude) 
  
 def runmt(num_threads, nreq, aid, token, isWarmup=False):
@@ -83,8 +86,8 @@ def runmt(num_threads, nreq, aid, token, isWarmup=False):
 
     print("reserving")
     starts, ends = runmtres(num_threads, aid, token, nreq, allpretimes, allorderids, alltripids)
-    preduration = calcDuration(starts, ends)
     print("reserved: ", sum([len(l) for l in allorderids]))
+    preduration = calcDuration(starts, ends)
     time.sleep(5)
 
     #print("warming up pay..")
@@ -151,7 +154,7 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripids.append(tripId)
                 pretime, preres = preserve_other(aid, token, orderId, tripId, session)
                 if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
-                        if i >= cutoff and i <= nreq-cutoff:
+                        if i >= cutoff and i < nreq-cutoff:
                             pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
@@ -173,7 +176,7 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                             print(preres)
                 else:
                     print("reached after res...", pretime, preres)
-            if i == (nreq - cutoff):
+            if i == (nreq - cutoff - 1):   
                 ends[idx] = time.time()
     
 def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
