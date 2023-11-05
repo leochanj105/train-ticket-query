@@ -168,7 +168,7 @@ def runpres(aid, token, nreq, pretimes, orderids, tripids, starts, ends, idx):
                 tripids.append(tripId)
                 pretime, preres = preserve(aid, token, tripId, session)
                 if pretime is not None and preres is not None and 'order' in preres and 'id' in preres['order']:
-                        if i >= cutoff and i <= nreq-cutoff:
+                        if i >= cutoff and i < nreq-cutoff:
                             pretimes.append(pretime)
                         orderId = preres['order']['id']
                         orderids.append(orderId)
@@ -187,13 +187,13 @@ def runpay(aid, token, paytimes, orderids, tripids, starts, ends, idx):
                 starts[idx] = time.time()
             paytime, payres = pay(aid, token, orderids[i], tripids[i], session)
             if paytime is not None and payres == True:
-                if i >= cutoff and i <= nreq-cutoff:
+                if i >= cutoff and i < nreq-cutoff:
                     paytimes.append(paytime)
                 if alwaysPrint:
                     print(payres)
             else:
                 print("reached after pay...", paytime, payres)
-            if i == (nreq - cutoff):
+            if i == (nreq - cutoff - 1):
                 ends[idx] = time.time()
 
 def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
@@ -204,13 +204,13 @@ def runcancel(aid, token, canceltimes, orderids, starts, ends, idx):
                 starts[idx] = time.time()
             canceltime, cancelres = cancel(aid, token, orderids[i], session)
             if canceltime is not None and cancelres is not None and cancelres['status'] == True:    
-                if i >= cutoff and i <= nreq-cutoff:
+                if i >= cutoff and i < nreq-cutoff:
                     canceltimes.append(canceltime)
                 if alwaysPrint:
                     print(cancelres)
             else:
                 print("reached after cancel...", canceltime, cancelres)
-            if i == (nreq - cutoff):
+            if i == (nreq - cutoff - 1):
                 ends[idx] = time.time()
             # print(cancelres)
     
