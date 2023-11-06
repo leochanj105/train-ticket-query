@@ -12,7 +12,7 @@ orderaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 orderotheraddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 canceladdr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 payaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-presaddr = "node2.throughput.lumos-pg0.utah.cloudlab.us"
+presaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 presotheraddr = "node2.throughput.lumos-pg0.utah.cloudlab.us"
 loginaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 
@@ -79,6 +79,7 @@ def preserve(aid, token, tripId, session):
     response = None
     start = time.time()
     try:
+        #print(presaddr)
         preserveres = session.post("http://" + presaddr + ":14568/preserve", json = orderTicketsInfoWithOrderId, cookies=cookies, timeout=timeout)
         elapsed = time.time() - start
         response = json.loads(preserveres.text)
