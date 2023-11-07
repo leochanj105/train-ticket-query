@@ -2,11 +2,12 @@ import json
 import requests
 import time
 import uuid
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
 import numpy as np
 from random import random
 from threading import Thread, Barrier
 import sys
-import os
 from common import *
 # num_threads = 2
 # num_reqs_per_thread = 1
@@ -16,7 +17,7 @@ from common import *
 alwaysPrint=False
 warmthds = 20
 warmreqs = 100
-cutoff = 100
+cutoff = 50
 def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
     if trecs == None:
         trecs = [[] for i in range(nthds)]
@@ -132,9 +133,9 @@ def runmt(num_threads, nreq, aid, token, isWarmup=False):
     goodpre = sum([len(l) for l in allpretimes])
     goodpay = sum([len(l) for l in allpaytimes])
     goodcancel = sum([len(l) for l in allcanceltimes])
-    print(goodpre, preduration)
-    print(goodpay, payduration)
-    print(goodcancel, cancelduration)
+    print("res:", goodpre, preduration)
+    print("pay:",goodpay, payduration)
+    print("cancel:", goodcancel, cancelduration)
     # actualtime = reqtime - 2*keepoff
     tpre = goodpre/preduration
     tpay = goodpay/payduration

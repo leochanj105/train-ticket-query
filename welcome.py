@@ -2,11 +2,12 @@ import json
 import requests
 import time
 import uuid
-import numpy as np
+import os
+#os.environ['OPENBLAS_NUM_THREADS'] = '15'
+#import numpy as np
 from random import random
 from threading import Thread, Barrier
 import sys
-import os
 from common import *
 # num_threads = 2
 # num_reqs_per_thread = 1
@@ -35,32 +36,45 @@ def runmtw(nthds, nreq, trecs):
 
 
 def calcDuration(starts, ends):
-    endsexclude = np.array(ends)
-    startsexclude = np.array(starts)
+    #endsexclude = np.array(ends)
+    #startsexclude = np.array(starts)
     
-    endsexclude = endsexclude[endsexclude!=0]
-    startsexclude = startsexclude[startsexclude!=0]
-    if endsexclude.shape[0] == 0 or startsexclude.shape[0] == 0:
+    #endsexclude = endsexclude[endsexclude!=0]
+    #startsexclude = startsexclude[startsexclude!=0]
+    #if endsexclude.shape[0] == 0 or startsexclude.shape[0] == 0:
+    #    return 0
+    vst = []
+    for s in starts:
+        if s != 0:
+            vst.append(s)
+    ved = []
+    for s in ends:
+        if s != 0:
+            ved.append(s)
+    if len(vst) == 0 or len(ved) == 0: 
         return 0
-    return max(endsexclude) - min(startsexclude) 
- 
+    return max(ved) - min(vst) 
+
+def mean(arr):
+    return sum(arr)/len(arr)
+
 def runmt(num_threads, nreq,isWarmup=False):
     allpaytimes = [[] for i in range(num_threads)]
-    print("welcome")
+#    print("welcome")
     starts, ends = runmtw(num_threads, nreq, allpaytimes)
     payduration = calcDuration(starts, ends) 
     
     meanpay = 0
 
     try:
-        meanpay = np.mean(sum(allpaytimes, []))
+        meanpay = mean(sum(allpaytimes, []))
     except Exception as e:
         print("welcome exception")
         print(e)
     
     
     goodpay = sum([len(l) for l in allpaytimes])
-    print(goodpay, payduration)
+    print(goodpay, payduration, meanpay)
     # actualtime = reqtime - 2*keepoff
     tpay = goodpay/payduration
     # print(np.size(allpretimes))

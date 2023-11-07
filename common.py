@@ -2,11 +2,11 @@ import json
 import requests
 import time
 import uuid
-import numpy as np
+#import numpy as np
 from random import random
 from threading import Thread, Barrier
 import sys
-timeout = 60
+timeout = 30
 keepoff = 0
 orderaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
 orderotheraddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
