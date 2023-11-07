@@ -45,6 +45,15 @@ def getother(aid, token, orderId):
     elapsed = time.time() - start
     return elapsed, json.loads(res.text)
 
+def welcome(session):
+    start = time.time()
+    try:
+        wres = session.get("http://" + orderaddr + ":12031/welcome", timeout=timeout)
+        elapsed = time.time() - start
+        return elapsed, wres
+    except requests.exceptions.Timeout as e:
+        print(e)
+    return None,None
 
 def preserve_other(aid, token, orderId, tripId, session):
     orderTicketsInfoWithOrderId = {"contactsId":"aded7dc5-06a7-4503-8e21-b7cad7a1f386",
