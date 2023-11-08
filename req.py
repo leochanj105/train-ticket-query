@@ -3,8 +3,8 @@ import requests
 import time
 import uuid
 import os
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-import numpy as np
+#os.environ['OPENBLAS_NUM_THREADS'] = '1'
+#import numpy as np
 from random import random
 from threading import Thread, Barrier
 import sys
@@ -64,15 +64,20 @@ def runmtcancel(nthds, aid, token, trecs, orderids):
 
 
 def calcDuration(starts, ends):
-    endsexclude = np.array(ends)
-    startsexclude = np.array(starts)
-    
-    endsexclude = endsexclude[endsexclude!=0]
-    startsexclude = startsexclude[startsexclude!=0]
-    if endsexclude.shape[0] == 0 or startsexclude.shape[0] == 0:
+    vst = []
+    for s in starts:
+        if s != 0:
+            vst.append(s)
+    ved = []
+    for s in ends:
+        if s != 0:
+            ved.append(s)
+    if len(vst) == 0 or len(ved) == 0:
         return 0
-    return max(endsexclude) - min(startsexclude) 
- 
+    return max(ved) - min(vst)
+
+def mean(arr):
+    return sum(arr)/len(arr)
 def runmt(num_threads, nreq, aid, token, isWarmup=False):
     allpretimes = [[] for i in range(num_threads)]
     allpaytimes = [[] for i in range(num_threads)]
@@ -114,18 +119,18 @@ def runmt(num_threads, nreq, aid, token, isWarmup=False):
     meancancel = 0
 
     try:
-        meanpre = np.mean(sum(allpretimes, []))
+        meanpre = mean(sum(allpretimes, []))
     except Exception as e:
         print("meanpre exception")
         print(e)
     try:
-        meanpay = np.mean(sum(allpaytimes, []))
+        meanpay = mean(sum(allpaytimes, []))
     except Exception as e:
         print("meanpay exception")
         print(e)
     
     try:
-        meancancel = np.mean(sum(allcanceltimes, []))
+        meancancel = mean(sum(allcanceltimes, []))
     except Exception as e:
         print("meancancel exception")
         print(e)
