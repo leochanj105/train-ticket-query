@@ -8,13 +8,14 @@ from threading import Thread, Barrier
 import sys
 timeout = 30
 keepoff = 0
-orderaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-orderotheraddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-canceladdr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-payaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-presaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
-presotheraddr = "node2.throughput.lumos-pg0.utah.cloudlab.us"
-loginaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
+orderaddr = "10.10.1.4"
+#orderaddr = "node3.throughput.lumos-pg0.utah.cloudlab.us"
+orderotheraddr = "10.10.1.4"
+canceladdr = "10.10.1.4"
+payaddr = "10.10.1.4"
+presaddr = "10.10.1.4"
+presotheraddr = "10.10.1.3"
+loginaddr = "10.10.1.4"
 
 
 
