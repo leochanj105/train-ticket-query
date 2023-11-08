@@ -27,7 +27,7 @@ func httpClient() *http.Client {
 func readBody(readCloser io.ReadCloser) ([]byte, error) {
     defer readCloser.Close()
     body, err := ioutil.ReadAll(readCloser)
-    ///fmt.Println(string(body))
+    //fmt.Println(string(body))
     if err != nil {
         return nil, err
     }
@@ -39,7 +39,7 @@ func req(j int){
   _ = j
   client := httpClient()
   for i:=0; i < nreqs;i++{
-	req, err := http.NewRequest(http.MethodGet, "http://node3.throughput.lumos-pg0.utah.cloudlab.us:8099/hello", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://10.10.1.4:12031/welcome", nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
@@ -58,8 +58,8 @@ func req(j int){
 }
 
 func main(){
-  nthds = 200
-  nreqs = 500
+  nthds = 30
+  nreqs = 20000
   for i:=0; i < nthds;i++{
 	  wg.Add(1)
 	  go req(i)
