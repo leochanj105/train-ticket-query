@@ -44,7 +44,7 @@ func httpClient() *http.Client {
 func readBody(readCloser io.ReadCloser) (error) {
     defer readCloser.Close()
     body, err := ioutil.ReadAll(readCloser)
-    fmt.Println(string(body))
+    //fmt.Println(string(body))
     if err != nil {
         return err
     }
@@ -70,8 +70,9 @@ func pay(res []Result, alloids []string, idx int){
   client := httpClient()
   var start, end int64
   for i:=0; i < nreqs;i++{
-	oid := alloids[idx * nthds + i]
-	fmt.Println("paying for ", oid)
+	//fmt.Println(idx, nthds, i, idx*nthds +i)
+	oid := alloids[idx * nreqs + i]
+	//fmt.Printf("%d, %d paying for %s\n", pid, idx, oid)
 	jsonstr := fmt.Sprintf(`{"tripId":"%s",
                                  "orderId":"%s"}`, tripId, oid)
 	fulladdr := fmt.Sprintf("http://%s:18673/inside_payment/pay", payaddr)
@@ -108,7 +109,7 @@ func readParams(){
   aid = os.Args[3]
   token = os.Args[4]
   pid, _ = strconv.Atoi(os.Args[5])
-  fmt.Println(pid)
+  //fmt.Println("nreqs ", nreqs, pid)
 }
 
 func main(){
@@ -142,12 +143,12 @@ func main(){
       fmt.Println(err)
   }
 
-  for i:=0;i<nthds*nreqs;i++{
-	fmt.Println(alloids[i])
-  }
-  if pid < 1000{
-	  return
-  }
+  //for i:=0;i<nthds*nreqs;i++{
+//	fmt.Println(alloids[i])
+  //}
+  //if pid < 1000{
+//	  return
+ // }
 
   var allresults [][]Result = make([][]Result, nthds)
   for i:=0;i<nthds;i++{
