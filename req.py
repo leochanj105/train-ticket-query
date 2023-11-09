@@ -25,12 +25,16 @@ def runmtres(nthds, aid, token, nreqs, trecs, orderids, tripids):
     ends = [0.0] * nthds
     threads = []
     for i in range(nthds):
-        t = Thread(name = "thread_" + str(i), target=runpres, args = (aid, token, nreqs,trecs[i] ,orderids[i], tripids[i], starts, ends, i))
-        threads.append(t)
-        t.start()
+        if nthds == 1:
+            runpres(aid, token, nreqs, trecs[0], orderids[0], tripids[0], starts, ends, 0)
+        else:
+            t = Thread(name = "thread_" + str(i), target=runpres, args = (aid, token, nreqs,trecs[i] ,orderids[i], tripids[i], starts, ends, i))
+            threads.append(t)
+            t.start()
     for i in range(nthds):
-        t = threads[i]
-        t.join()
+        if nthds > 1:
+            t = threads[i]
+            t.join()
     return starts, ends
 def runmtpay(nthds, aid, token, trecs, orderids, tripids):
     if trecs == None:
@@ -39,12 +43,16 @@ def runmtpay(nthds, aid, token, trecs, orderids, tripids):
     ends = [0.0] * nthds
     threads = []
     for i in range(nthds):
-        t = Thread(name = "thread_" + str(i), target=runpay, args = (aid, token, trecs[i], orderids[i], tripids[i], starts, ends, i))
-        threads.append(t)
-        t.start()
+        if nthds == 1:
+            runpay(aid, token, trecs[0], orderids[0], tripids[0], starts, ends, 0)
+        else:
+            t = Thread(name = "thread_" + str(i), target=runpay, args = (aid, token, trecs[i], orderids[i], tripids[i], starts, ends, i))
+            threads.append(t)
+            t.start()
     for i in range(nthds):
-        t = threads[i]
-        t.join()
+        if nthds > 1:
+            t = threads[i]
+            t.join()
     return starts, ends
 
 def runmtcancel(nthds, aid, token, trecs, orderids):
@@ -54,12 +62,16 @@ def runmtcancel(nthds, aid, token, trecs, orderids):
     ends = [0.0] * nthds
     threads = []
     for i in range(nthds):
-        t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, trecs[i], orderids[i], starts, ends, i))
-        threads.append(t)
-        t.start()
+        if nthds == 1:
+            runcancel(aid, token, trecs[0], orderids[0], starts, ends, 0)
+        else:
+            t = Thread(name = "thread_" + str(i), target=runcancel, args = (aid, token, trecs[i], orderids[i], starts, ends, i))
+            threads.append(t)
+            t.start()
     for i in range(nthds):
-        t = threads[i]
-        t.join()
+        if nthds > 1:
+            t = threads[i]
+            t.join()
     return starts, ends
 
 

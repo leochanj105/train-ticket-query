@@ -24,13 +24,14 @@ def runmtw(nthds, nreq, trecs):
     starts = [0.0] * nthds
     ends = [0.0] * nthds
     threads = []
-    for i in range(nthds):
-        t = Thread(name = "thread_" + str(i), target=runwelcome, args = (nreq, trecs[i], starts, ends, i))
-        threads.append(t)
-        t.start()
-    for i in range(nthds):
-        t = threads[i]
-        t.join()
+    runwelcome(nreq, trecs[0], starts, ends, 0)
+    #for i in range(nthds):
+    #    t = Thread(name = "thread_" + str(i), target=runwelcome, args = (nreq, trecs[i], starts, ends, i))
+    #    threads.append(t)
+    #    t.start()
+    #for i in range(nthds):
+    #    t = threads[i]
+    #    t.join()
     return starts, ends
 
 
