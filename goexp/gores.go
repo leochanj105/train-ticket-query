@@ -114,6 +114,8 @@ func reserve(res []Result){
 func readParams(){
   nthds, _ = strconv.Atoi(os.Args[1])
   nreqs, _ = strconv.Atoi(os.Args[2])
+  nreqs = nreqs * nthds / 4
+  nthds = 4
   aid = os.Args[3]
   token = os.Args[4]
 }

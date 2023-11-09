@@ -6,14 +6,14 @@ reqpt=$3
 dirname=$4
 mkdir -p $dirname
 
-loginres=($(python3 login.py))
+loginres=($(python3 ../login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 
 #python3 req.py -1 20 xx $aid $token
 
 mkdir -p tmp
-
+: '
 echo "reserving..."
 #while IFS= read -r line;
 for i in $(seq 1 1 $nprocs)
@@ -35,6 +35,8 @@ do
 done
 wait < <(jobs -p)
 sleep 5
+'
+
 echo "paying..."
 
 for i in $(seq 1 1 $nprocs)
@@ -56,6 +58,8 @@ do
 	done < $fname
 done
 wait < <(jobs -p)
+
+: '
 sleep 5
 echo "canceling..."
 for i in $(seq 1 1 $nprocs)
@@ -76,4 +80,4 @@ do
 	done < $fname
 done
 wait < <(jobs -p)
-
+'

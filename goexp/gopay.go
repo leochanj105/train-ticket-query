@@ -24,7 +24,7 @@ var tripId = "G1234"
 
 var aid, token string
 var date string
-var tmpf string
+var pid int
 type Result struct{
 	start int64
 	end int64
@@ -44,7 +44,7 @@ func httpClient() *http.Client {
 func readBody(readCloser io.ReadCloser) (error) {
     defer readCloser.Close()
     body, err := ioutil.ReadAll(readCloser)
-    //fmt.Println(string(body))
+    fmt.Println(string(body))
     if err != nil {
         return err
     }
@@ -71,7 +71,7 @@ func pay(res []Result, alloids []string, idx int){
   var start, end int64
   for i:=0; i < nreqs;i++{
 	oid := alloids[idx * nthds + i]
-	//fmt.Println("paying for ", oid)
+	fmt.Println("paying for ", oid)
 	jsonstr := fmt.Sprintf(`{"tripId":"%s",
                                  "orderId":"%s"}`, tripId, oid)
 	fulladdr := fmt.Sprintf("http://%s:18673/inside_payment/pay", payaddr)
@@ -107,7 +107,8 @@ func readParams(){
   nreqs, _ = strconv.Atoi(os.Args[2])
   aid = os.Args[3]
   token = os.Args[4]
-  tmpf = os.Args[5]
+  pid, _ = strconv.Atoi(os.Args[5])
+  fmt.Println(pid)
 }
 
 func main(){
@@ -115,7 +116,7 @@ func main(){
   date = time.Now().AddDate(0,0,1).Format("2006-01-02")
   //fmt.Println(nthds, nreqs, aid, token, date)
   var alloids []string = make([]string, nthds * nreqs)
-  file, err := os.Open(tmpf)
+  file, err := os.Open("tmp/uids")
   if err != nil {
       fmt.Println(err)
   }
@@ -126,13 +127,26 @@ func main(){
   idx := 0
   for scanner.Scan() {
       t := scanner.Text()
-      oid := strings.Split(t, " ")[0]
+      oid := strings.Trim(t, " ")
       //fmt.Println(oid)
-      alloids[idx] = oid
+      if idx >= nthds*nreqs*pid{
+	 alloids[(idx - nthds*nreqs*pid)] = oid
+	 //fmt.Println(oid)
+      }
       idx += 1
+      if idx >= nthds*nreqs*(pid+1) {
+	 break
+      }
   }
   if err := scanner.Err(); err != nil {
       fmt.Println(err)
+  }
+
+  for i:=0;i<nthds*nreqs;i++{
+	fmt.Println(alloids[i])
+  }
+  if pid < 1000{
+	  return
   }
 
   var allresults [][]Result = make([][]Result, nthds)
