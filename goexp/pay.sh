@@ -14,7 +14,7 @@ bash ./dbchange.sh 0
 total=$(($nprocs*$nthds*$reqpt))
 #echo $total
 
-bash querydb.sh $total
+bash querydb.sh $total 0
 python3 hex2uuid.py > tmp/uids
 
 fname=tmp/uids
