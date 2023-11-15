@@ -19,7 +19,7 @@ import (
 var nthds int
 var nreqs int
 
-var canceladdr = "10.10.1.4"
+var canceladdr = "10.10.1.2"
 var tripId = "G1234"
 
 var aid, token string
