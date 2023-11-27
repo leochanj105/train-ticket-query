@@ -6,7 +6,7 @@ reqpt=$3
 dirname=$4
 mkdir -p $dirname
 mkdir -p tmp
-loginres=($(python3 ../login.py))
+loginres=($(python3 ../../login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 

@@ -17,6 +17,7 @@ total=$(($nprocs*$nthds*$reqpt))
 bash querydb.sh $total 1
 python3 hex2uuid.py > tmp/uids
 
+
 fname=tmp/uids
 
 #python3 req.py -1 20 xx $aid $token

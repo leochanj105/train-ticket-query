@@ -19,6 +19,9 @@ python3 hex2uuid.py > tmp/uids
 
 fname=tmp/uids
 
+bash ../otherctx.sh
+bash ../
+
 #python3 req.py -1 20 xx $aid $token
 echo "calculating refund..."
 for i in $(seq 1 1 $nprocs)
