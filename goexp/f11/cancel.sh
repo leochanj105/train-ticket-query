@@ -12,12 +12,12 @@ token=${loginres[1]}
 
 bash ../ssoctx.sh
 
-bash ./dbchange.sh 1
+bash ../dbchange.sh 1
 
 total=$(($nprocs*$nthds*$reqpt))
 
-bash querydb.sh $total 1
-python3 hex2uuid.py > tmp/uids
+bash ../querydb.sh $total 1
+python3 ../hex2uuid.py > tmp/uids
 
 
 fname=tmp/uids
