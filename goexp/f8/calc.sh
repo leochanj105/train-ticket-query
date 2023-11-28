@@ -10,7 +10,8 @@ loginres=($(python3 ../../loginVIP.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 viptoken=${loginres[2]}
-bash ./dbchange.sh 1
+#bash ./dbchange.sh 1
+
 
 total=$(($nprocs*$nthds*$reqpt))
 
@@ -18,9 +19,6 @@ bash querydb.sh $total 1
 python3 hex2uuid.py > tmp/uids
 
 fname=tmp/uids
-
-bash ../otherctx.sh
-bash ../
 
 #python3 req.py -1 20 xx $aid $token
 echo "calculating refund..."

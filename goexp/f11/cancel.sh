@@ -10,6 +10,8 @@ loginres=($(python3 ../../login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 
+bash ../ssoctx.sh
+
 bash ./dbchange.sh 1
 
 total=$(($nprocs*$nthds*$reqpt))
