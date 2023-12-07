@@ -9,13 +9,13 @@ mkdir -p tmp
 loginres=($(python3 ../../login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
-bash ./dbchange.sh 0
+bash ../orderchange.sh 0
 
 total=$(($nprocs*$nthds*$reqpt))
 #echo $total
-
-bash querydb.sh $total 0
-python3 hex2uuid.py > tmp/uids
+bash ../deletepay.sh
+bash ../queryorder.sh $total 0
+python3 ../hex2uuid.py > tmp/uids
 
 fname=tmp/uids
 #readarray -t oids < tmp/uids

@@ -10,12 +10,12 @@ loginres=($(python3 ../../login.py))
 aid=${loginres[0]}
 token=${loginres[1]}
 
-bash ./dbchange.sh 1
+bash ../orderchange.sh 1
 
 total=$(($nprocs*$nthds*$reqpt))
 
-bash querydb.sh $total 1
-python3 hex2uuid.py > tmp/uids
+bash ../queryorder.sh $total 1
+python3 ../hex2uuid.py > tmp/uids
 
 fname=tmp/uids
 
